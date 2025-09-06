@@ -23,10 +23,12 @@ void Setup(AlxWindow* w){
     ResizeAlxFont(8,8);
     sp = GSprite_New(28,28);
     
-    if(Files_isFile(NN_PATH))
-        nnet = NeuralNetwork_Load(NN_PATH);
-    else
-        nnet = NeuralNetwork_Make((unsigned int[]){ 784,16,10,0 });
+    nnet = NeuralNetwork_Make((NeuralLayerBuilder[]){
+        NeuralLayerBuilder_Make(784,"relu"),
+        NeuralLayerBuilder_Make(16,"relu"),
+        NeuralLayerBuilder_Make(10,"softmax"),
+        NeuralLayerBuilder_End()
+    });
 }
 void Update(AlxWindow* w){
     if(Stroke(ALX_KEY_E).PRESSED){
