@@ -20,13 +20,13 @@ NeuralNetwork nnet;
 void Setup(AlxWindow* w){
     RGA_Set(Time_Nano());
 
-    ResizeAlxFont(8,8);
-    sp = GSprite_New(28,28);
+    ReloadAlxFont(16,16);
+    sp = GSprite_None(28,28);
     
     nnet = NeuralNetwork_Make((NeuralLayerBuilder[]){
         NeuralLayerBuilder_Make(784,"relu"),
         NeuralLayerBuilder_Make(16,"relu"),
-        NeuralLayerBuilder_Make(10,"softmax"),
+        NeuralLayerBuilder_Make(NN_COUNT,"softmax"),
         NeuralLayerBuilder_End()
     });
 }
@@ -45,6 +45,11 @@ void Update(AlxWindow* w){
     const float posy = 0.5f * (GetHeight() - sp.h);
     const Vec2 m = Vec2_Sub(GetMouse(),(Vec2){ posx,posy });
 
+
+    Clear(DARK_BLUE);
+
+    GSprite_Render(WINDOW_STD_ARGS,&sp,posx,posy);
+
     if(Stroke(ALX_MOUSE_L).DOWN){
         if(m.x >= 0.0f && m.x < sp.w && m.y >= 0.0f && m.y < sp.h){
             sp.img[(int)m.y * sp.h + (int)m.x] = 1.0f;
@@ -52,7 +57,6 @@ void Update(AlxWindow* w){
 
         NeuralNetwork_Calc(&nnet,sp.img);
         prediction = NeuralNetwork_Decision(&nnet);
-        printf("\rPrediction: %d",prediction);
     }
     if(Stroke(ALX_MOUSE_R).DOWN){
         if(m.x >= 0.0f && m.x < sp.w && m.y >= 0.0f && m.y < sp.h){
@@ -61,20 +65,15 @@ void Update(AlxWindow* w){
 
         NeuralNetwork_Calc(&nnet,sp.img);
         prediction = NeuralNetwork_Decision(&nnet);
-        printf("\rPrediction: %d",prediction);
     }
-
-    Clear(DARK_BLUE);
-
-    GSprite_Render(WINDOW_STD_ARGS,&sp,posx,posy);
 
     //String str = String_Format("T:%d, ND:%d, I:%d",test,ndir,item);
     //RenderCStrSize(str.Memory,str.size,0.0f,0.0f,WHITE);
     //String_Free(&str);
 
-    // String str = String_Format("Pre: %d",prediction);
-    // RenderCStrSize(str.Memory,str.size,0.0f,0.0f,WHITE);
-    // String_Free(&str);
+    String str = String_Format("P: %d",prediction);
+    RenderCStrSize(str.Memory,str.size,(GetWidth() - str.size * GetAlxFont()->CharSizeX) / 2,0.0f,WHITE);
+    String_Free(&str);
 }
 void Delete(AlxWindow* w){
     NeuralNetwork_Free(&nnet);
