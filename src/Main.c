@@ -18,7 +18,7 @@ GSprite sp;
 NeuralNetwork nnet;
 
 void Setup(AlxWindow* w){
-    RGA_Set(Time_Nano());
+    Random_Set(Time_Nano());
 
     ReloadAlxFont(16,16);
     sp = GSprite_None(28,28);
